@@ -118,7 +118,7 @@
                 </div>
 
                 <!-- Tabs -->
-                <div class="flex border-b border-gray-300 mb-6">
+                <div id="tab-container" class="flex border-b border-gray-300 mb-6">
                     <button id="tab-theory" onclick="switchTab('theory')" class="px-6 py-3 font-medium text-sm transition-colors border-b-2 border-[#1351B4] text-[#1351B4]">
                         Embasamento Teórico
                     </button>
@@ -420,6 +420,17 @@
                 explanation: "ERRADO. (II) é Falsa."
               }
             ]
+          },
+          {
+            id: 'q5',
+            examYear: '2014',
+            questionNumber: '03',
+            topic: 'Gestão Ambiental',
+            theory: [],
+            videoEmbed: '<iframe width="100%" height="100%" src="https://www.youtube.com/embed/9HMqGO4GreM" title="Vídeo questão Enade" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>',
+            contextText: "Abaixo, assista ao vídeo referente à questão Enade 2014 - Questão 3.",
+            questionPrompt: "",
+            options: []
           }
         ];
 
@@ -433,6 +444,7 @@
             questionList: document.getElementById('question-list'),
             topicTitle: document.getElementById('topic-title'),
             contentContainer: document.getElementById('content-container'),
+            tabContainer: document.getElementById('tab-container'),
             tabTheory: document.getElementById('tab-theory'),
             tabPractice: document.getElementById('tab-practice'),
         };
@@ -448,12 +460,18 @@
             const q = QUESTIONS[currentQuestionIndex];
             els.topicTitle.innerText = q.topic;
             
-            updateTabsStyles();
-
-            if (activeTab === 'theory') {
-                renderTheory(q);
-            } else {
+            // Logic to hide tabs if no theory available (e.g. video only question)
+            if (q.theory.length === 0) {
+                els.tabContainer.style.display = 'none';
                 renderQuiz(q);
+            } else {
+                els.tabContainer.style.display = 'flex';
+                updateTabsStyles();
+                if (activeTab === 'theory') {
+                    renderTheory(q);
+                } else {
+                    renderQuiz(q);
+                }
             }
             
             // Update sidebar active state
@@ -527,6 +545,14 @@
                 mediaHTML = `
                     <div class="my-6 flex justify-center">
                         <img src="${q.imageUrl}" alt="Imagem da Questão" class="max-w-full h-auto max-h-[400px] object-contain border border-gray-200 rounded shadow-sm" />
+                    </div>
+                `;
+            } else if (q.videoEmbed) {
+                mediaHTML = `
+                    <div class="my-6 w-full max-w-4xl mx-auto">
+                        <div class="aspect-video w-full rounded shadow-sm overflow-hidden border border-gray-200">
+                           ${q.videoEmbed}
+                        </div>
                     </div>
                 `;
             }
